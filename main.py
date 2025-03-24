@@ -86,14 +86,6 @@ async def shutdown(signal_received=None):
     sys.exit(0)
 
 
-# Add a command to exit the bot
-@bot.command(name="exit", help="Shuts down the bot (owner only)")
-@commands.is_owner()
-async def exit_command(ctx):
-    await ctx.send("Shutting down the bot...")
-    await shutdown()
-
-
 # Register signal handlers for graceful exit
 def register_signal_handlers():
     if sys.platform != "win32":  # Unix-like systems
