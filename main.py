@@ -4,9 +4,6 @@ from music_player import MusicPlayer
 from bot_commands import BotCommands
 import dotenv
 import os
-import signal
-import sys
-import asyncio
 
 # Load environment variables from .env file
 dotenv.load_dotenv()
@@ -57,52 +54,6 @@ commands_handler = BotCommands(bot, get_music_player)
 # Add the commands to the bot
 commands_handler.setup()
 
-
-# Graceful shutdown function
-async def shutdown(signal_received=None):
-    """Handle graceful shutdown of the bot"""
-    if signal_received:
-        print(f'\nReceived exit signal {signal_received.name}...')
-    else:
-        print('\nShutting down bot...')
-
-    # Close all voice clients (disconnect from voice channels)
-    for guild_id, music_player in music_players.items():
-        try:
-            if hasattr(music_player, 'cleanup'):
-                await music_player.cleanup()
-            elif hasattr(music_player, 'voice_client') and music_player.voice_client:
-                await music_player.voice_client.disconnect()
-        except Exception as e:
-            print(f"Error cleaning up music player for guild {guild_id}: {e}")
-
-    # Close the bot
-    if not bot.is_closed():
-        await bot.close()
-
-    print("Bot has been successfully shut down.")
-
-    # Exit the program
-    sys.exit(0)
-
-
-# Register signal handlers for graceful exit
-def register_signal_handlers():
-    if sys.platform != "win32":  # Unix-like systems
-        for sig in (signal.SIGTERM, signal.SIGINT):
-            signal.signal(sig, lambda s, f: asyncio.create_task(shutdown(s)))
-    else:  # Windows
-        signal.signal(signal.SIGINT, lambda s, f: asyncio.create_task(shutdown(s)))
-
-
 # Run the bot
 if __name__ == "__main__":
-    register_signal_handlers()
-    print("Bot started. Press Ctrl+C to exit.")
-    try:
-        bot.run(bot_token)
-    except KeyboardInterrupt:
-        # This block might not be reached due to how discord.py handles Ctrl+C,
-        # but it's here as a fallback
-        print("Keyboard interrupt received. Shutting down...")
-        # The actual shutdown is handled by the signal handler
+    bot.run(bot_token)  # Use the token from environment variables
