@@ -1,6 +1,6 @@
 # Discord Music Bot
 
-A feature-rich Discord music bot that allows users to play music from YouTube, Spotify, and more in Discord voice channels.
+A feature-rich Discord music bot that allows users to play music from YouTube and Spotify in Discord voice channels.
 
 ## Features
 
